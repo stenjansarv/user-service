@@ -1,0 +1,99 @@
+service: user-service
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: eu-west-2
+  memorySize: 128
+  timeout: 30
+  environment:
+    MONGODB_USER: ${self:custom.mongodbUser}
+    MONGODB_PASSWORD: ${self:custom.mongodbPassword}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - logs:*
+      Resource:
+        - '*'
+
+  apiKeys:
+    - user-service-key
+
+  tags:
+    Name: user-service
+    Environment: prod
+    Owner: developers
+    Cluster: application
+    Role: functions
+    BusinessUnit: engineering
+    Clearance: developers
+
+package:
+  include:
+    - lib/**
+    - api/**
+  exclude:
+    - infra/**
+
+plugins:
+  - serverless-offline-ssm-provider
+  - serverless-offline
+
+custom:
+  mongodbUser: ${ssm:/Services/User/MongoDB/User}
+  mongodbPassword: ${ssm:/Services/User/MongoDB/Password}
+  serverless-offline-ssm-provider:
+    file: .ssm
+
+functions:
+  register-user:
+    handler: api/user/post.handler
+    memorySize: 128
+    events:
+      - http:
+          path: 'user/{userId}/register'
+          method: post
+          request:
+            parameters:
+              paths:
+                userId: true
+  get-publisher:
+    handler: api/user/get.handler
+    memorySize: 128
+    events:
+      - http:
+          path: 'user/{userId}'
+          method: get
+          request:
+            parameters:
+              paths:
+                userId: true
+  update-publisher:
+    handler: api/user/put.handler
+    memorySize: 128
+    events:
+      - http:
+          path: '/user/{userId}/update'
+          method: put
+          request:
+            parameters:
+              paths:
+                userId: true
+
+
+resources:
+  Resources:
+    InternalApiUri:
+      Type: AWS::SSM::Parameter
+      DependsOn:
+        - ApiGatewayRestApi
+      Properties:
+        Name: /Discovery/UserService/Api/Uri
+        Type: String
+        Value: 
+          !Join
+            - ''
+            - - "https://"
+              - !Ref ApiGatewayRestApi
+              - ".execute-api."
+              - !Ref AWS::Region
+              - ".amazonaws.com/dev"
