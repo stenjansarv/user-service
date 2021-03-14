@@ -21,7 +21,9 @@ exports.handler = async (event) => {
       },
       fullName: null,
       researcher: !!context.userId,
-      // importing: true
+      blog: false,
+      dashboard: [],
+      twitterHandle: null
     }
 
     const result = await collection.insertOne(doc)
@@ -29,6 +31,6 @@ exports.handler = async (event) => {
   } catch (e) {
     return invalid()
   } finally {
-    await client.close();
+    await client.close()
   }
 }
