@@ -1,2 +1,2 @@
 /Services/User/MongoDB/User=admin
-/Services/User/MongoDB/Password=secret
+/Services/User/MongoDB/Password~true=secret
