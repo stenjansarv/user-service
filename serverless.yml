@@ -40,7 +40,7 @@ plugins:
 
 custom:
   mongodbUser: ${ssm:/Services/User/MongoDB/User}
-  mongodbPassword: ${ssm:/Services/User/MongoDB/Password}
+  mongodbPassword: ${ssm:/Services/User/MongoDB/Password~true}
   serverless-offline-ssm-provider:
     file: .ssm
 
@@ -56,18 +56,14 @@ functions:
             parameters:
               paths:
                 userId: true
-  get-publisher:
+  get-user:
     handler: api/user/get.handler
     memorySize: 128
     events:
       - http:
-          path: 'user/{userId}'
+          path: 'user'
           method: get
-          request:
-            parameters:
-              paths:
-                userId: true
-  update-publisher:
+  update-user:
     handler: api/user/put.handler
     memorySize: 128
     events:
