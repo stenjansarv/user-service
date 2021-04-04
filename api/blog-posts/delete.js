@@ -1,22 +1,22 @@
 const MongoClient = require('mongodb').MongoClient
 const uri = require('../../lib/connection')
-const extract = require('../extract')
+const contextualize = require('../context')
 
 const { success, invalid } = require('../respond')
 
 exports.handler = async (event) => {
-  const { payload } = extract(event)
+  const context = contextualize(event)
 
   const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true })
 
   try {
     await client.connect()
-    const collection = client.db('user_data').collection('users')
+    const collection = client.db('blog').collection('posts')
 
-    const doc = { email: payload.email }
+    const filter = { author: context.userId, postId: context.postId }
+    const result = await collection.findOneAndDelete(filter, { returnNewDocument: true })
 
-    const result = await collection.findOne(doc)
-    return success(result)
+    return success(result.value)
   } catch (e) {
     console.error(e)
     return invalid()

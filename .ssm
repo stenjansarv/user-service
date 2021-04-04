@@ -1,2 +1,3 @@
 /Services/User/MongoDB/User=admin
 /Services/User/MongoDB/Password~true=secret
+Services/User/TwitterAPI/Token~true=token

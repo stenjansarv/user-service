@@ -1,7 +1,10 @@
+const { get } = require('lodash')
 const MongoClient = require('mongodb').MongoClient
 const uri = require('../../lib/connection')
 const contextualize = require('../context')
 const extract = require('../extract')
+const { v4 } = require('uuid')
+
 
 const moment = require('moment')
 
@@ -15,25 +18,21 @@ exports.handler = async (event) => {
 
   try {
     await client.connect()
-    const collection = client.db('user_data').collection('users')
+    const collection = client.db('blog').collection('posts')
 
-    const doc = { 
-      email: body.email,
-      orcidID: context.userId, 
-      group: {
-        enabled: false,
-        groupMembers: [context.userId]
-      },
-      fullName: null,
-      researcher: !!context.userId,
-      blog: false,
-      dashboard: [],
-      twitterHandle: null,
-      importing: false,
-      registerDate: moment().valueOf()
+    const doc = {
+      author: get(body, 'author'),
+      postId: v4(),
+      title: get(body, 'title'),
+      comments: [],
+      likes: [],
+      post: get(body, 'post'),
+      createdAt: moment().valueOf(),
+      updatedAt: moment().valueOf()
     }
 
     const result = await collection.insertOne(doc)
+
     return success(result.ops[0])
   } catch (e) {
     return invalid()

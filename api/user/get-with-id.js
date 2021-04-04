@@ -1,11 +1,11 @@
 const MongoClient = require('mongodb').MongoClient
 const uri = require('../../lib/connection')
-const extract = require('../extract')
+const contextualize = require('../context')
 
 const { success, invalid } = require('../respond')
 
 exports.handler = async (event) => {
-  const { payload } = extract(event)
+  const context = contextualize(event)
 
   const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true })
 
@@ -13,7 +13,7 @@ exports.handler = async (event) => {
     await client.connect()
     const collection = client.db('user_data').collection('users')
 
-    const doc = { email: payload.email }
+    const doc = { orcidID: context.userId }
 
     const result = await collection.findOne(doc)
     return success(result)

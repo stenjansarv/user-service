@@ -22,6 +22,10 @@
     "serverless-offline-ssm-provider": "^2.1.0"
   },
   "dependencies": {
-    "mongodb": "^3.6.4"
+    "lodash": "^4.17.21",
+    "moment": "^2.29.1",
+    "mongodb": "^3.6.4",
+    "node-fetch": "^2.6.1",
+    "uuid": "^8.3.2"
   }
 }

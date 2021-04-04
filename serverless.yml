@@ -8,6 +8,7 @@ provider:
   environment:
     MONGODB_USER: ${self:custom.mongodbUser}
     MONGODB_PASSWORD: ${self:custom.mongodbPassword}
+    TWITTER_BEARER_TOKEN: ${self:custom.twitterBearerToken}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -41,6 +42,7 @@ plugins:
 custom:
   mongodbUser: ${ssm:/Services/User/MongoDB/User}
   mongodbPassword: ${ssm:/Services/User/MongoDB/Password~true}
+  twitterBearerToken: ${ssm:/Services/User/TwitterAPI/Token~true}
   serverless-offline-ssm-provider:
     file: .ssm
 
@@ -63,18 +65,87 @@ functions:
       - http:
           path: 'user'
           method: get
+  get-user-with-id:
+    handler: api/user/get-with-id.handler
+    memorySize: 128
+    events:
+      - http:
+          path: 'user/{userId}'
+          method: get
+          request:
+            parameters:
+              paths:
+                userId: true
   update-user:
     handler: api/user/put.handler
     memorySize: 128
     events:
       - http:
-          path: '/user/{userId}/update'
+          path: 'user/{userId}/update'
           method: put
           request:
             parameters:
               paths:
                 userId: true
 
+  create-post:
+    handler: api/blog-posts/post.handler
+    memorySize: 128
+    events:
+      - http:
+          path: 'blog/{userId}/create'
+          method: post
+          request:
+            parameters:
+              paths:
+                userId: true
+  get-posts:
+    handler: api/blog-posts/get.handler
+    memorySize: 128
+    events:
+      - http:
+          path: 'blog/{userId}'
+          method: get
+          request:
+            parameters:
+              paths:
+                userId: true
+  update-post:
+    handler: api/blog-posts/put.handler
+    memorySize: 128
+    events:
+      - http:
+          path: 'blog/{userId}/update/{postId}'
+          method: put
+          request:
+            parameters:
+              paths:
+                userId: true
+                postId: true
+  delete-post:
+    handler: api/blog-posts/delete.handler
+    memorySize: 128
+    events:
+      - http:
+          path: 'blog/{userId}/delete/{postId}'
+          method: delete
+          request:
+            parameters:
+              paths:
+                userId: true
+                postId: true
+
+  get-twitter-feed:
+    handler: api/twitter/get.handler
+    memorySize: 128
+    events:
+      - http:
+          path: 'twitterfeed/{twitterHandle}'
+          method: get
+          request:
+            parameters:
+              paths:
+                twitterHandle: true
 
 resources:
   Resources:
