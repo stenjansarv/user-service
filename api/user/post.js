@@ -22,7 +22,7 @@ exports.handler = async (event) => {
       orcidID: context.userId, 
       group: {
         enabled: false,
-        groupMembers: [context.userId]
+        groupMembers: [{ orcidID: context.userId }]
       },
       fullName: null,
       researcher: !!context.userId,
