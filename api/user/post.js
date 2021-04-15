@@ -28,6 +28,7 @@ exports.handler = async (event) => {
       researcher: !!context.userId,
       blog: false,
       dashboard: [],
+      description: null,
       twitterHandle: null,
       importing: false,
       registerDate: moment().valueOf()

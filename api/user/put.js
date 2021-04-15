@@ -58,6 +58,7 @@ exports.handler = async (event) => {
       twitterHandle: get(body, 'twitterHandle', undefined),
       location: get(body, 'location', undefined),
       importing: get(body, 'importing', undefined),
+      description: get(body, 'description', undefined),
       registerDate: get(body, 'registerDate', undefined)
     }, isUndefined)
   }
